@@ -1,0 +1,54 @@
+{
+  "trades": [
+    {
+      "id": 1786751220611,
+      "date": "2026-07-28",
+      "cls": "Forex",
+      "symbol": "AUDUSD",
+      "side": "Sell",
+      "entry": 0.69467,
+      "exit": 0.69875,
+      "sl": 0.69875,
+      "tp": 0.68345,
+      "size": 0.25,
+      "pnl": -102,
+      "rr": -1
+    },
+    {
+      "id": 1786751399618,
+      "date": "2026-07-29",
+      "cls": "Matières Premières",
+      "symbol": "WTI",
+      "side": "Buy",
+      "entry": 81.694,
+      "exit": 83.627,
+      "sl": 77.677,
+      "tp": 93.45,
+      "size": 0.3,
+      "pnl": 352.1,
+      "rr": 0.48
+    },
+    {
+      "id": 1786752084395,
+      "date": "2026-07-29",
+      "cls": "Forex",
+      "symbol": "AUDUSD",
+      "side": "Sell",
+      "entry": 0.69463,
+      "exit": 0.6994,
+      "sl": 0.6994,
+      "tp": 0.68345,
+      "size": 0.26,
+      "pnl": -124.02,
+      "rr": -1
+    }
+  ],
+  "startCapital": 2940.09,
+  "dailyJournals": {},
+  "goals": {
+    "monthlyTarget": 0,
+    "maxTradesDay": 0,
+    "maxLossDay": 0
+  },
+  "updatedAt": "2026-08-15T23:32:29.486Z"
+}
