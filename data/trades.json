@@ -44,11 +44,18 @@
     }
   ],
   "startCapital": 2940.09,
-  "dailyJournals": {},
+  "dailyJournals": {
+    "2026-08-16": {
+      "plan": "",
+      "notes": "",
+      "review": "",
+      "mood": ""
+    }
+  },
   "goals": {
     "monthlyTarget": 0,
     "maxTradesDay": 0,
     "maxLossDay": 0
   },
-  "updatedAt": "2026-08-15T23:33:46.311Z"
+  "updatedAt": "2026-08-16T15:41:32.565Z"
 }
