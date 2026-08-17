@@ -31,6 +31,7 @@
   .brand{ display:flex; align-items:baseline; gap:12px; }
   .brand .mark{ color:var(--brass); font-size:12px; letter-spacing:0.35em; text-transform:uppercase; border:1px solid var(--brass-soft); padding:4px 8px; border-radius:var(--radius); }
   .brand h1{ font-size:22px; margin:0; font-weight:600; letter-spacing:0.01em; }
+  .trader-title{ font-size:11px; color:var(--brass); border:1px solid var(--brass-soft); background:rgba(201,150,59,0.08); padding:4px 10px; border-radius:20px; letter-spacing:0.03em; }
   .header-right{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
   .cap-config{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink-dim); }
   .cap-config input{ background:var(--panel-2); border:1px solid var(--line); color:var(--brass); font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; padding:5px 8px; width:110px; border-radius:var(--radius); }
@@ -71,6 +72,33 @@
   .stat-hero .k{ font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-faint); }
   .stat-hero .v{ font-family:'Space Grotesk',sans-serif; font-size:34px; font-weight:700; line-height:1.1; }
   .streak-row{ display:flex; gap:10px; margin-top:14px; }
+
+  /* Trophées */
+  .badge-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(84px,1fr)); gap:10px; }
+  .badge{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 6px; border-radius:var(--radius); border:1px solid var(--line-soft); background:var(--panel-2); text-align:center; }
+  .badge .ic{ font-size:22px; filter:grayscale(1); opacity:0.35; }
+  .badge .lb{ font-size:9.5px; color:var(--ink-faint); line-height:1.3; }
+  .badge.unlocked{ border-color:var(--brass-soft); background:rgba(201,150,59,0.08); }
+  .badge.unlocked .ic{ filter:none; opacity:1; }
+  .badge.unlocked .lb{ color:var(--brass); font-weight:600; }
+  .badge.just-unlocked{ animation: badgePop .6s ease; }
+  @keyframes badgePop{ 0%{ transform:scale(0.7); } 50%{ transform:scale(1.15); } 100%{ transform:scale(1); } }
+
+  /* Meilleur mois */
+  .best-month-box{ background:var(--panel-2); border:1px solid var(--brass-soft); border-radius:var(--radius); padding:14px; text-align:center; }
+  .best-month-box .lbl{ font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-faint); margin-bottom:4px; }
+  .best-month-box .val{ font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; color:var(--brass); }
+  .best-month-box .sub{ font-size:11px; color:var(--ink-dim); margin-top:2px; }
+
+  /* Flash plein écran sur nouveau trade */
+  .screen-flash{ position:fixed; inset:0; pointer-events:none; z-index:150; opacity:0; }
+  .screen-flash.win{ background:radial-gradient(circle, rgba(63,203,142,0.16), transparent 70%); animation: flashPulse .9s ease; }
+  .screen-flash.loss{ background:radial-gradient(circle, rgba(224,96,90,0.14), transparent 70%); animation: flashPulse .9s ease; }
+  @keyframes flashPulse{ 0%{ opacity:0; } 20%{ opacity:1; } 100%{ opacity:0; } }
+
+  /* Carte de performance (canvas overlay) */
+  .card-modal .modal{ max-width:480px; text-align:center; }
+  .card-modal canvas{ width:100%; border-radius:var(--radius); border:1px solid var(--line); margin-bottom:14px; }
   .streak-box{ flex:1; background:var(--panel-2); border:1px solid var(--line-soft); border-radius:var(--radius); padding:10px; text-align:center; }
   .streak-box .k{ font-size:9px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-faint); display:block; margin-bottom:4px; }
   .streak-box .v{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:15px; }
@@ -293,6 +321,7 @@
     <div class="brand">
       <span class="mark">Ledger</span>
       <h1 class="disp">Journal de Trading</h1>
+      <span class="trader-title" id="traderTitle"></span>
     </div>
     <div class="header-right">
       <div class="cap-config">Solde de départ<input type="number" id="startCapital" step="0.01" value="2940.09"></div>
@@ -395,6 +424,17 @@
 
     <!-- RIGHT COLUMN -->
     <div>
+      <div class="panel">
+        <p class="panel-title">Trophées <span class="aux" id="badgeCountLabel"></span></p>
+        <div class="badge-grid" id="badgeGrid"></div>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">Record personnel <span class="aux">— meilleur mois</span></p>
+        <div class="best-month-box" id="bestMonthBox"></div>
+        <button class="btn-sec" onclick="exportPerformanceCard()" style="width:100%; margin-top:14px;">Générer la carte de performance</button>
+      </div>
+
       <div class="panel">
         <p class="panel-title">Nouveau trade</p>
         <div class="trade-form">
@@ -520,6 +560,16 @@
   </div>
 </div>
 
+<div class="screen-flash" id="screenFlash"></div>
+
+<div class="modal-bg card-modal" id="cardModalBg" onclick="if(event.target===this) closeCardModal()">
+  <div class="modal">
+    <h3><span>Carte de performance</span><span class="close" onclick="closeCardModal()">&times;</span></h3>
+    <canvas id="perfCardCanvas" width="1000" height="1250"></canvas>
+    <button class="btn" onclick="downloadPerformanceCard()" style="width:100%;">Télécharger en PNG</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -528,6 +578,18 @@ const DOW_FR = ["Lu","Ma","Me","Je","Ve","Sa","Di"];
 const ASSET_CLASSES = ["Forex","Crypto","Actions","Matières Premières","Indices"];
 const ASSET_COLORS = { "Forex":"#3FCB8E","Crypto":"#C9963B","Actions":"#5B8DEF","Matières Premières":"#E0605A","Indices":"#8B70D6" };
 const MOODS = ["Confiant","Neutre","Discipliné","Anxieux","Frustré","Fatigué","Euphorique"];
+const BADGES = [
+  { id:'first', ic:'🎯', lb:'Premier trade', test:s=>s.n>=1 },
+  { id:'ten', ic:'🔟', lb:'10 trades', test:s=>s.n>=10 },
+  { id:'fifty', ic:'🏅', lb:'50 trades', test:s=>s.n>=50 },
+  { id:'hundred', ic:'👑', lb:'100 trades', test:s=>s.n>=100 },
+  { id:'p500', ic:'💵', lb:'$500 cumulés', test:s=>s.net>=500 },
+  { id:'p1000', ic:'💰', lb:'$1 000 cumulés', test:s=>s.net>=1000 },
+  { id:'p5000', ic:'🏆', lb:'$5 000 cumulés', test:s=>s.net>=5000 },
+  { id:'streak5', ic:'🔥', lb:'Série de 5 gains', test:s=>s.bestStreak>=5 },
+  { id:'streak10', ic:'⚡', lb:'Série de 10 gains', test:s=>s.bestStreak>=10 },
+  { id:'pf2', ic:'📈', lb:'Facteur profit > 2', test:s=>s.pf>=2 },
+];
 
 let trades = JSON.parse(localStorage.getItem('tj_trades') || '[]');
 let startCapital = parseFloat(localStorage.getItem('tj_capital')) || 2940.09;
@@ -546,6 +608,10 @@ let realCapitalNow = startCapital;
 let theme = localStorage.getItem('tj_theme') || 'dark';
 let lastBackupAt = parseInt(localStorage.getItem('tj_last_backup') || '0', 10);
 let alertedKeys = JSON.parse(localStorage.getItem('tj_alert_keys') || '{}');
+let unlockedBadges = JSON.parse(localStorage.getItem('tj_badges') || '[]');
+let bestMonthSeen = JSON.parse(localStorage.getItem('tj_best_month') || 'null');
+let lastFlashCount = trades.length;
+let displayedStats = {};
 
 const $ = id => document.getElementById(id);
 const fmt$ = n => (n<0?'-$':'$') + Math.abs(n).toFixed(2);
@@ -656,6 +722,7 @@ function addTrade(){
   ['fSymbol','fEntry','fExit','fSL','fTP','fSize','fPnl','fRR','fSetup','fDiscipline','fStress','fErrors','fShot','fNotes'].forEach(id=>$(id).value='');
   $('fDate').value = todayISO(); $('fStatus').value = 'closed';
   populateFilters(); render();
+  if (status==='closed' && t.pnl!==0) triggerFlash(t.pnl>0?'win':'loss');
   toast(status==='open' ? 'Trade ouvert ajouté.' : 'Trade ajouté ('+trades.length+' au total).');
 }
 function deleteTrade(id){
@@ -710,6 +777,7 @@ function confirmClose(){
   t.rr = parseFloat($('closeRR').value)||0;
   t.status = 'closed';
   saveTrades(); closeCloseModal(); populateFilters(); render();
+  if (t.pnl!==0) triggerFlash(t.pnl>0?'win':'loss');
   toast('Trade clôturé.');
 }
 
@@ -1074,6 +1142,159 @@ function renderTradeQuality(closedTrades){
   }).join("");
 }
 
+/* ---------------- Hype: compteurs animés ---------------- */
+function animateValue(el, from, to, formatter, duration){
+  if (!el) return;
+  const start = performance.now();
+  const d = duration || 700;
+  function step(now){
+    const p = Math.min(1, (now-start)/d);
+    const eased = 1 - Math.pow(1-p, 3);
+    const val = from + (to-from)*eased;
+    el.textContent = formatter(val);
+    if (p<1) requestAnimationFrame(step);
+    else el.textContent = formatter(to);
+  }
+  requestAnimationFrame(step);
+}
+function animateHeroStats(net, winPct, base){
+  const prevNet = displayedStats.net ?? net;
+  const prevWin = displayedStats.winPct ?? winPct;
+  const prevRet = displayedStats.ret ?? (base?prevNet/base*100:0);
+  const ret = base? net/base*100 : 0;
+  animateValue($('statPnlCumule'), prevNet, net, v=>fmt$(v), 700);
+  $('statPnlCumule').style.color = net>=0?'var(--green)':'var(--red)';
+  animateValue($('statWinPct'), prevWin, winPct, v=>v.toFixed(2)+'%', 700);
+  animateValue($('statReturnPct'), prevRet, ret, v=>v.toFixed(2)+'%', 700);
+  displayedStats = { net, winPct, ret };
+}
+function triggerFlash(kind){
+  const el = $('screenFlash');
+  el.className = 'screen-flash '+kind;
+  void el.offsetWidth;
+  el.className = 'screen-flash '+kind;
+  setTimeout(()=>{ el.className='screen-flash'; }, 950);
+}
+
+/* ---------------- Hype: badges + titre de trader ---------------- */
+function renderBadgesAndTitle(allClosed){
+  const n = allClosed.length;
+  const wins = allClosed.filter(t=>t.pnl>0), losses = allClosed.filter(t=>t.pnl<0);
+  const totalProfits = wins.reduce((s,t)=>s+t.pnl,0), totalLosses = Math.abs(losses.reduce((s,t)=>s+t.pnl,0));
+  const net = totalProfits-totalLosses;
+  const pf = totalLosses ? totalProfits/totalLosses : (totalProfits>0?Infinity:0);
+  const avgRR = n ? allClosed.reduce((s,t)=>s+(Number(t.rr)||0),0)/n : 0;
+  const winPct = n ? wins.length/n*100 : 0;
+  let bestStreak=0, curStreak=0, curType=null;
+  [...allClosed].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id).forEach(t=>{
+    if (t.pnl>0){ curStreak=(curType==='W')?curStreak+1:1; curType='W'; bestStreak=Math.max(bestStreak,curStreak); }
+    else if (t.pnl<0){ curType='L'; curStreak=0; }
+    else { curType=null; curStreak=0; }
+  });
+  const stats = { n, net, pf, bestStreak };
+
+  const grid = $('badgeGrid');
+  let newlyUnlocked = [];
+  grid.innerHTML = BADGES.map(b=>{
+    const unlocked = b.test(stats);
+    if (unlocked && !unlockedBadges.includes(b.id)) newlyUnlocked.push(b.id);
+    const justClass = newlyUnlocked.includes(b.id) ? ' just-unlocked' : '';
+    return `<div class="badge ${unlocked?'unlocked':''}${justClass}" title="${b.lb}"><span class="ic">${b.ic}</span><span class="lb">${b.lb}</span></div>`;
+  }).join('');
+  $('badgeCountLabel').textContent = `${BADGES.filter(b=>b.test(stats)).length} / ${BADGES.length}`;
+  if (newlyUnlocked.length){
+    unlockedBadges = [...new Set([...unlockedBadges, ...newlyUnlocked])];
+    localStorage.setItem('tj_badges', JSON.stringify(unlockedBadges));
+    const b = BADGES.find(x=>x.id===newlyUnlocked[0]);
+    toast(`🏆 Trophée débloqué : ${b.lb}`);
+  }
+
+  let title = 'Le Trader';
+  if (n<10) title = 'Le Débutant Prometteur';
+  else if (avgRR>=2 && winPct>=50) title = 'Le Sniper';
+  else if (bestStreak>=8) title = 'Le Discipliné';
+  else if (pf>=2) title = 'Le Stratège';
+  else if (isFinite(pf) && pf<1) title = "L'Apprenti";
+  $('traderTitle').textContent = title;
+}
+
+/* ---------------- Hype: meilleur mois personnel ---------------- */
+function renderBestMonth(allClosed){
+  const byMonth = {};
+  allClosed.forEach(t=>{
+    const d = new Date(t.date+'T00:00:00');
+    const key = `${MOIS_FR[d.getMonth()]} ${d.getFullYear()}`;
+    byMonth[key] = (byMonth[key]||0) + t.pnl;
+  });
+  let bestKey=null, bestVal=-Infinity;
+  Object.entries(byMonth).forEach(([k,v])=>{ if (v>bestVal){ bestVal=v; bestKey=k; } });
+  const box = $('bestMonthBox');
+  if (!bestKey){ box.innerHTML = '<div class="sub">Pas encore de trade clôturé.</div>'; return; }
+  box.innerHTML = `<div class="lbl">Meilleur mois à ce jour</div><div class="val">${fmt$(bestVal)}</div><div class="sub">${bestKey}</div>`;
+  if (!bestMonthSeen || bestVal > bestMonthSeen.val){
+    if (bestMonthSeen) toast(`🎉 Nouveau record mensuel : ${fmt$(bestVal)} en ${bestKey} !`);
+    bestMonthSeen = { key:bestKey, val:bestVal };
+    localStorage.setItem('tj_best_month', JSON.stringify(bestMonthSeen));
+  }
+}
+
+/* ---------------- Hype: carte de performance partageable ---------------- */
+function exportPerformanceCard(){
+  const y = calCursor.getFullYear(), m = calCursor.getMonth();
+  const monthTrades = trades.filter(isClosed).filter(t=>{ const d=new Date(t.date+'T00:00:00'); return d.getFullYear()===y && d.getMonth()===m; });
+  const n = monthTrades.length;
+  const wins = monthTrades.filter(t=>t.pnl>0);
+  const net = monthTrades.reduce((s,t)=>s+t.pnl,0);
+  const winPct = n ? wins.length/n*100 : 0;
+  const avgRR = n ? monthTrades.reduce((s,t)=>s+(Number(t.rr)||0),0)/n : 0;
+  const best = n ? Math.max(...monthTrades.map(t=>t.pnl)) : 0;
+
+  const cv = $('perfCardCanvas'); const ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  const bgIsLight = document.documentElement.getAttribute('data-theme')==='light' || document.body.classList.contains('light');
+  ctx.fillStyle = bgIsLight ? '#F2F0EA' : '#0A0C10';
+  ctx.fillRect(0,0,W,H);
+  const grad = ctx.createRadialGradient(W*0.15,0,0,W*0.15,0,W*0.9);
+  grad.addColorStop(0,'rgba(201,150,59,0.12)'); grad.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = 'rgba(201,150,59,0.5)'; ctx.lineWidth = 3; ctx.strokeRect(24,24,W-48,H-48);
+
+  ctx.fillStyle = '#C9963B'; ctx.font = '600 26px "Space Grotesk", sans-serif';
+  ctx.fillText('LEDGER', 60, 100);
+  ctx.fillStyle = bgIsLight ? '#211E19' : '#E7E4DC'; ctx.font = '700 44px "Space Grotesk", sans-serif';
+  ctx.fillText(`${MOIS_FR[m]} ${y}`, 60, 160);
+  ctx.fillStyle = '#8B909C'; ctx.font = '20px "IBM Plex Mono", monospace';
+  ctx.fillText($('traderTitle') ? $('traderTitle').textContent : 'Le Trader', 60, 195);
+
+  ctx.fillStyle = net>=0 ? '#3FCB8E' : '#E0605A'; ctx.font = '700 88px "Space Grotesk", sans-serif';
+  ctx.fillText(fmt$(net), 60, 330);
+  ctx.fillStyle = '#8B909C'; ctx.font = '18px "IBM Plex Mono", monospace';
+  ctx.fillText('P&L NET DU MOIS', 60, 365);
+
+  const stats = [
+    ['Trades', String(n)], ['Win rate', winPct.toFixed(1)+'%'],
+    ['RR moyen', avgRR.toFixed(2)], ['Meilleur trade', fmt$(best)]
+  ];
+  let sy = 460;
+  stats.forEach(([k,v])=>{
+    ctx.fillStyle = '#8B909C'; ctx.font = '20px "IBM Plex Mono", monospace'; ctx.fillText(k, 60, sy);
+    ctx.fillStyle = bgIsLight ? '#211E19' : '#E7E4DC'; ctx.font = '700 34px "IBM Plex Mono", monospace'; ctx.fillText(v, 60, sy+42);
+    sy += 110;
+  });
+
+  ctx.fillStyle = '#575D6B'; ctx.font = '16px "IBM Plex Mono", monospace';
+  ctx.fillText('Journal de Trading — généré le ' + new Date().toLocaleDateString('fr-FR'), 60, H-50);
+
+  $('cardModalBg').classList.add('show');
+}
+function closeCardModal(){ $('cardModalBg').classList.remove('show'); }
+function downloadPerformanceCard(){
+  const cv = $('perfCardCanvas');
+  const url = cv.toDataURL('image/png');
+  const a = document.createElement('a'); a.href=url; a.download='carte-performance.png'; a.click();
+  toast('Carte téléchargée.');
+}
+
 function render(){
   populateYearFilter();
   const allClosedTrades = trades.filter(isClosed);
@@ -1197,6 +1418,9 @@ function render(){
   renderTradeQuality(closedTrades);
   renderAdvanced();
   updateBackupReminder();
+  animateHeroStats(net, winPct, capitalBase);
+  renderBadgesAndTitle(allClosedTrades);
+  renderBestMonth(allClosedTrades);
 }
 
 function renderCalc(){
