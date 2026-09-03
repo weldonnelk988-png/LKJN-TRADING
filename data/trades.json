@@ -65,7 +65,7 @@
       "pulses": []
     }
   ],
-  "startCapital": 3066,
+  "startCapital": 3066.17,
   "dailyJournals": {
     "2026-08-16": {
       "plan": "",
@@ -79,5 +79,5 @@
     "maxTradesDay": 2,
     "maxLossDay": 300
   },
-  "updatedAt": "2026-09-03T22:54:53.408Z"
+  "updatedAt": "2026-09-03T22:54:58.786Z"
 }
