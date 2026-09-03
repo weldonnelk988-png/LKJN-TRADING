@@ -41,6 +41,28 @@
       "size": 0.26,
       "pnl": -124.02,
       "rr": -1
+    },
+    {
+      "id": 1788476033082,
+      "date": "2026-09-03",
+      "cls": "Forex",
+      "symbol": "USDCHF",
+      "side": "Buy",
+      "status": "closed",
+      "entry": 0.80934,
+      "exit": 0.8058,
+      "sl": 0.8058,
+      "tp": 0.82067,
+      "size": 0.3,
+      "pnl": -131.79,
+      "rr": 1,
+      "setup": "continuation",
+      "discipline": 4,
+      "stress": 2,
+      "errors": "",
+      "notes": "",
+      "shot": "https://www.tradingview.com/x/jxeT7DSq/",
+      "pulses": []
     }
   ],
   "startCapital": 2940.09,
@@ -57,5 +79,5 @@
     "maxTradesDay": 2,
     "maxLossDay": 300
   },
-  "updatedAt": "2026-09-03T22:52:08.388Z"
+  "updatedAt": "2026-09-03T22:53:54.349Z"
 }
