@@ -94,6 +94,12 @@
       "notes": "",
       "review": "",
       "mood": ""
+    },
+    "2026-09-16": {
+      "plan": "j'avais un biais haussier dollar et un biais baissier franc suisse",
+      "notes": "mes biais ont suivie mesn attentes",
+      "review": "tout a marcher comme prevue",
+      "mood": "Discipliné"
     }
   },
   "goals": {
@@ -101,5 +107,5 @@
     "maxTradesDay": 2,
     "maxLossDay": 300
   },
-  "updatedAt": "2026-09-16T20:27:50.711Z"
+  "updatedAt": "2026-09-16T20:31:44.705Z"
 }
