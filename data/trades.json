@@ -63,6 +63,28 @@
       "notes": "",
       "shot": "https://www.tradingview.com/x/jxeT7DSq/",
       "pulses": []
+    },
+    {
+      "id": 1789590469213,
+      "date": "2026-09-10",
+      "cls": "Forex",
+      "symbol": "USDCHF",
+      "side": "Buy",
+      "status": "closed",
+      "entry": 0.81168,
+      "exit": 0.825,
+      "sl": 0.80565,
+      "tp": 0.825,
+      "size": 0.19,
+      "pnl": 306.76,
+      "rr": 2.21,
+      "setup": "Breakout",
+      "discipline": 4,
+      "stress": 3,
+      "errors": "",
+      "notes": "perso cette position respecte mon plan",
+      "shot": "",
+      "pulses": []
     }
   ],
   "startCapital": 3066.17,
@@ -79,5 +101,5 @@
     "maxTradesDay": 2,
     "maxLossDay": 300
   },
-  "updatedAt": "2026-09-03T22:56:32.654Z"
+  "updatedAt": "2026-09-16T20:27:50.711Z"
 }
