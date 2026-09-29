@@ -85,6 +85,28 @@
       "notes": "perso cette position respecte mon plan",
       "shot": "",
       "pulses": []
+    },
+    {
+      "id": 1790705996472,
+      "date": "2026-09-29",
+      "cls": "Forex",
+      "symbol": "GBPAUD",
+      "side": "Buy",
+      "status": "closed",
+      "entry": 1.88805,
+      "exit": 1.88435,
+      "sl": 1.88435,
+      "tp": 1.9,
+      "size": 0.39,
+      "pnl": -101.4,
+      "rr": -1,
+      "setup": "news",
+      "discipline": 3,
+      "stress": 4,
+      "errors": "impulsive ",
+      "notes": "",
+      "shot": "",
+      "pulses": []
     }
   ],
   "startCapital": 3066.17,
@@ -107,5 +129,5 @@
     "maxTradesDay": 2,
     "maxLossDay": 300
   },
-  "updatedAt": "2026-09-16T20:31:44.705Z"
+  "updatedAt": "2026-09-29T18:19:57.781Z"
 }
