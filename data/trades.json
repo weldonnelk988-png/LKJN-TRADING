@@ -129,6 +129,28 @@
       "notes": "",
       "shot": "",
       "pulses": []
+    },
+    {
+      "id": 1790880912943,
+      "date": "2026-09-30",
+      "cls": "Forex",
+      "symbol": "AUDUSD",
+      "side": "Sell",
+      "status": "closed",
+      "entry": 0.69704,
+      "exit": 0.69325,
+      "sl": 0.69952,
+      "tp": 0.69096,
+      "size": 0.44,
+      "pnl": 96.26,
+      "rr": 1.53,
+      "setup": "breakout",
+      "discipline": 4,
+      "stress": 2,
+      "errors": "",
+      "notes": "",
+      "shot": "",
+      "pulses": []
     }
   ],
   "startCapital": 3066.17,
@@ -151,5 +173,5 @@
     "maxTradesDay": 2,
     "maxLossDay": 300
   },
-  "updatedAt": "2026-09-29T18:25:34.348Z"
+  "updatedAt": "2026-10-01T18:55:14.431Z"
 }
